@@ -1,0 +1,8 @@
+api-key: ""
+
+auto-purge: false
+
+# SQLite Database
+enable-sqlite: false
+db-path:
+table:
