@@ -1,10 +1,10 @@
-api-key: ""
+api-key:
 
 auto-purge: false
 
-xuid: ""
+xuid:
 
 # SQLite Database
 enable-sqlite: false
-db-path: ""
-table: ""
+db-path:
+table:
