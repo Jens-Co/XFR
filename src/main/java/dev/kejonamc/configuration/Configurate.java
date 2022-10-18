@@ -71,4 +71,10 @@ public class Configurate {
     public boolean getAutoPurge() {
         return autoPurge;
     }
+
+    @JsonProperty("xuid")
+    private String xuid;
+    public String getXUID() {
+        return xuid;
+    }
 }

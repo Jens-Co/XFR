@@ -36,6 +36,7 @@ public class DatabaseSetup {
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        logger.info("Database connection successful.");
     }
 
     public static Connection getConnection() {

@@ -2,7 +2,9 @@ api-key: ""
 
 auto-purge: false
 
+xuid: ""
+
 # SQLite Database
 enable-sqlite: false
-db-path:
-table:
+db-path: ""
+table: ""
