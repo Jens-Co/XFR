@@ -32,7 +32,7 @@ public class Purge {
 
     public void autoPurge() {
         int delay = 5000; // delay for 5 sec.
-        int period = 1000 * 60 * 60; // repeat every hour.
+        int period = 1000 * 60 * 60 * config.getTime();
         Timer timer = new Timer();
         logger.info("Auto purging friends");
 

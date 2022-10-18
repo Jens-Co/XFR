@@ -4,6 +4,9 @@ auto-purge: false
 
 xuid:
 
+# Time in hours
+timer: 1
+
 # SQLite Database
 enable-sqlite: false
 db-path:

@@ -77,4 +77,10 @@ public class Configurate {
     public String getXUID() {
         return xuid;
     }
+
+    @JsonProperty("time")
+    private int time;
+    public int getTime() {
+        return time;
+    }
 }

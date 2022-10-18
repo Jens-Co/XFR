@@ -19,6 +19,7 @@ public class XFR {
     private static final Logger logger = LoggerFactory.getLogger(XFR.class);
     private static Configurate config = null;
     public HashMap<String, Date> playerDatabase;
+
     public static void main(String[] args) {
         XFR enable = new XFR();
         enable.onEnable();
