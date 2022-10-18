@@ -11,16 +11,16 @@ import java.util.HashMap;
 
 public class FriendsList {
     private final Configurate config;
-    private final HashMap<String, String> friendsMap = new HashMap<>();
+    private final HashMap<String, String> friendsHashMap = new HashMap<>();
     private final Logger logger;
 
     public FriendsList(Configurate config, Logger logger) {
         this.config = config;
         this.logger = logger;
     }
-    public void List() {
+
+    public void friendsUpdater() {
         JSONObject response;
-        // Remove friend from XboxLive
         try {
             response = new JSONObject(RestClient.getXBL("https://xbl.io/api/v2/friends?xuid=" + config.getXUID(), config.getApiKey()));
         } catch (JSONException e) {
@@ -29,13 +29,13 @@ public class FriendsList {
         JSONArray data = (JSONArray) response.get("people");
         for (int i = 0; i < data.length(); i++) {
             JSONObject jsonObject2 = (JSONObject) data.get(i);
-            String id = (String) jsonObject2.get("xuid");
-            String name = (String) jsonObject2.get("displayName");
-            friendsMap.put(id, name);
-
+            friendsHashMap.put((String) jsonObject2.get("xuid"), (String) jsonObject2.get("displayName"));
         }
-        friendsMap.forEach((key, value) -> logger.info("xuid: " + key + " | " + "username: " + value));
-        friendsMap.clear();
         response.clear();
+        logger.info("friends list has updated.");
+    }
+
+    public HashMap<String, String> getFriendsHashMap() {
+        return friendsHashMap;
     }
 }

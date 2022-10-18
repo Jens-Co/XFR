@@ -1,27 +1,22 @@
 package dev.kejonamc.options;
 
-import dev.kejonamc.XFR;
 import dev.kejonamc.chewbotcca.RestClient;
 import dev.kejonamc.configuration.Configurate;
-import dev.kejonamc.database.DatabaseQuery;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Purge {
     private final Logger logger;
-    private final XFR INSTANCE;
     private final Configurate config;
+    private final LastSeenFriends lastSeenFriends;
+    private final FriendsList friendsList;
 
-    public Purge(Logger logger, XFR instance, Configurate config) {
+    public Purge(Logger logger, Configurate config) {
         this.logger = logger;
-        this.INSTANCE = instance;
         this.config = config;
+        friendsList = new FriendsList(config, logger);
+        lastSeenFriends = new LastSeenFriends(config, logger);
 
         // Auto purge friends
         if (config.getAutoPurge()) {
@@ -35,7 +30,6 @@ public class Purge {
         int period = 1000 * 60 * 60 * config.getTime();
         Timer timer = new Timer();
         logger.info("Auto purging friends");
-
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 purgeFriends();
@@ -44,37 +38,47 @@ public class Purge {
     }
 
     public void purgeFriends() {
-        // Make sure hashmap is updated.
-        updateDatabaseHashmap();
-        if (INSTANCE.playerDatabase.isEmpty()) {
-            logger.info("database hashmap was empty");
+        //Update both hashmaps.
+        lastSeenFriends.lastSeenFriendsUpdater();
+        friendsList.friendsUpdater();
+
+        if (lastSeenFriends.getLastSeenFriendsHashMap().isEmpty()) {
+            logger.info("Last seen friends hashmap was empty");
+            return;
+        }
+
+        if (friendsList.getFriendsHashMap().isEmpty()) {
+            logger.info("Last seen friends hashmap was empty");
             return;
         }
         // Date calculation.
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -10);
         // Current date minus 10 days.
-        for (String xuid : INSTANCE.playerDatabase.keySet()) {
-            if (INSTANCE.playerDatabase.get(xuid).before(cal.getTime())) {
-                JSONObject response = null;
-                // Remove friend from XboxLive
-                try {
-                    response = new JSONObject(RestClient.getXBL("https://xbl.io/api/v2/friends/remove/" + xuid, config.getApiKey()));
-                } catch (JSONException ignored) {
+        cal.add(Calendar.MINUTE, -10);
+        // Loop all last seen friends.
+        for (String lastSeenFriendsXUID : lastSeenFriends.getLastSeenFriendsHashMap().keySet()) {
+            // Check if last seen friend is actually a friend.
+            if (friendsList.getFriendsHashMap().containsKey(lastSeenFriendsXUID)) {
+                // Check if friend is over 10 days friend.
+                if (lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID).before(cal.getTime())) {
+                    // Remove friend from XboxLive
+                    try {
+                        int serverCode = Integer.parseInt(RestClient.xblStatusCode("https://xbl.io/api/v2/friends/remove/" + lastSeenFriendsXUID, config.getApiKey()));
+                        if (serverCode == 200) {
+                            logger.info("Removed account: " + lastSeenFriendsXUID + " : " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
+                            lastSeenFriends.getLastSeenFriendsHashMap().remove(lastSeenFriendsXUID);
+                        } else {
+                            logger.warn("Could not remove account: " + lastSeenFriendsXUID + " : " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
+                        }
+                    } catch (NumberFormatException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    logger.info("player only joined on " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
                 }
-                assert response != null;
-                response.clear();
+            } else {
+                logger.info("All friends recently joined or all older friends have been removed!");
             }
         }
-    }
-
-    public void updateDatabaseHashmap() {
-        DatabaseQuery databaseQuery = new DatabaseQuery();
-        try {
-            INSTANCE.playerDatabase = databaseQuery.databaseMap();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(INSTANCE.playerDatabase);
     }
 }

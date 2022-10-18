@@ -1,13 +1,8 @@
+# https://xbl.io/ API Key goes here.
 api-key:
-
-auto-purge: false
-
+# Some endpoint on XBL work better if you define your own XUID.
 xuid:
-
-# Time in hours
+# Automatically remove friends from XBL
+auto-purge: false
+# Time in hours.
 timer: 1
-
-# SQLite Database
-enable-sqlite: false
-db-path:
-table:

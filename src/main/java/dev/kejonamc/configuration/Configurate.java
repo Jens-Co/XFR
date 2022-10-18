@@ -48,24 +48,6 @@ public class Configurate {
         return apiKey;
     }
 
-    @JsonProperty("table")
-    private String table;
-    public String getTable() {
-        return table;
-    }
-
-    @JsonProperty("db-path")
-    private String path;
-    public String getPath() {
-        return path;
-    }
-
-    @JsonProperty("enable-sqlite")
-    private boolean enableDatabase;
-    public boolean getEnableDatabase() {
-        return enableDatabase;
-    }
-
     @JsonProperty("auto-purge")
     private boolean autoPurge;
     public boolean getAutoPurge() {
@@ -78,7 +60,7 @@ public class Configurate {
         return xuid;
     }
 
-    @JsonProperty("time")
+    @JsonProperty("timer")
     private int time;
     public int getTime() {
         return time;

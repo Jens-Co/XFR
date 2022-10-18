@@ -1,8 +1,6 @@
 package dev.kejonamc;
 
 import dev.kejonamc.configuration.Configurate;
-import dev.kejonamc.database.DatabaseSetup;
-import dev.kejonamc.options.FriendsList;
 import dev.kejonamc.options.Purge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +11,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
 public class XFR {
     private static final Logger logger = LoggerFactory.getLogger(XFR.class);
     private static Configurate config = null;
-    public HashMap<String, Date> playerDatabase;
 
     public static void main(String[] args) {
         XFR enable = new XFR();
@@ -42,14 +38,8 @@ public class XFR {
             logger.error("Could not create config.yml! " + e.getMessage());
             onDisable();
         }
-        // Enable database
-        if (config.getEnableDatabase()) {
-            new DatabaseSetup().mysqlSetup(config, logger);
-        } else {
-            logger.error("Database was not enabled.");
-        }
 
-        new Purge(logger,this, config);
+        new Purge(logger, config);
         logger.info("XFR has enabled.");
     }
     public void onDisable() {
@@ -63,8 +53,7 @@ public class XFR {
 
         switch (reader.readLine()) {
             case "stop" -> onDisable();
-            case "purge" -> new Purge(logger, this, config).purgeFriends();
-            case "friends" -> new FriendsList(config, logger).List();
+            case "purge" -> new Purge(logger, config).purgeFriends();
             default -> logger.warn("wrong command: " + reader.readLine());
         }
     }

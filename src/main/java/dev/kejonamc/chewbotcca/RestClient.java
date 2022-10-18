@@ -42,4 +42,24 @@ public class RestClient {
         }
     }
 
+    public static String xblStatusCode(String url, String apiKey) {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Authorization", apiKey)
+                .get()
+                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        // Why http 1 sight..
+        builder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
+
+        OkHttpClient client =  builder.build();
+        try {
+            Response response = client.newCall(request).execute();
+            String errorCode = String.valueOf(response.code());
+            response.close();
+            return errorCode;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
