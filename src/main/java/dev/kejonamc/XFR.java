@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class XFR extends Thread {
+public class XFR {
     private static final Logger logger = LoggerFactory.getLogger(XFR.class);
     private static Configurate config = null;
     public HashMap<String, Date> playerDatabase;
@@ -23,7 +23,7 @@ public class XFR extends Thread {
         XFR enable = new XFR();
         enable.onEnable();
         int num = 1;
-        while(num > 0) {
+        while (num > 0) {
             try {
                 enable.consoleReader();
             } catch (IOException e) {
