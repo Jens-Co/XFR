@@ -1,5 +1,6 @@
 package dev.kejonamc.options;
 
+import dev.kejonamc.XFR;
 import dev.kejonamc.chewbotcca.RestClient;
 import dev.kejonamc.configuration.Configurate;
 import org.json.JSONArray;
@@ -10,16 +11,12 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 
 public class FriendsList {
-    private final Configurate config;
+    private final Logger logger = new XFR().getLogger();
+    private final Configurate config = new XFR().getConfig();
     private final HashMap<String, String> friendsHashMap = new HashMap<>();
-    private final Logger logger;
-
-    public FriendsList(Configurate config, Logger logger) {
-        this.config = config;
-        this.logger = logger;
-    }
 
     public void friendsUpdater() {
+        logger.info("Pulling latest friends from XboxLive");
         JSONObject response;
         try {
             response = new JSONObject(RestClient.getXBL("https://xbl.io/api/v2/friends?xuid=" + config.getXUID(), config.getApiKey()));
@@ -30,9 +27,10 @@ public class FriendsList {
         for (int i = 0; i < data.length(); i++) {
             JSONObject jsonObject2 = (JSONObject) data.get(i);
             friendsHashMap.put((String) jsonObject2.get("xuid"), (String) jsonObject2.get("displayName"));
+            logger.info("Friend: " + jsonObject2.get("displayName") + "   --   XUID: " + jsonObject2.get("xuid"));
         }
         response.clear();
-        logger.info("friends list has updated.");
+        logger.info("Friends list has updated.");
     }
 
     public HashMap<String, String> getFriendsHashMap() {

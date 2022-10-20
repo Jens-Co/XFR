@@ -1,5 +1,6 @@
 package dev.kejonamc.options;
 
+import dev.kejonamc.XFR;
 import dev.kejonamc.chewbotcca.RestClient;
 import dev.kejonamc.configuration.Configurate;
 import org.slf4j.Logger;
@@ -7,16 +8,14 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class Purge {
-    private final Logger logger;
-    private final Configurate config;
+    private final Logger logger = new XFR().getLogger();
+    private final Configurate config = new XFR().getConfig();
     private final LastSeenFriends lastSeenFriends;
     private final FriendsList friendsList;
 
-    public Purge(Logger logger, Configurate config) {
-        this.logger = logger;
-        this.config = config;
-        friendsList = new FriendsList(config, logger);
-        lastSeenFriends = new LastSeenFriends(config, logger);
+    public Purge() {
+        friendsList = new FriendsList();
+        lastSeenFriends = new LastSeenFriends();
 
         // Auto purge friends
         if (config.getAutoPurge()) {
@@ -38,6 +37,7 @@ public class Purge {
     }
 
     public void purgeFriends() {
+        logger.info("Purging friends! please no not shutdown XFR");
         //Update both hashmaps.
         lastSeenFriends.lastSeenFriendsUpdater();
         friendsList.friendsUpdater();
@@ -54,7 +54,7 @@ public class Purge {
         // Date calculation.
         Calendar cal = Calendar.getInstance();
         // Current date minus 10 days.
-        cal.add(Calendar.MINUTE, -10);
+        cal.add(Calendar.DATE, -config.getDays());
         // Loop all last seen friends.
         for (String lastSeenFriendsXUID : lastSeenFriends.getLastSeenFriendsHashMap().keySet()) {
             // Check if last seen friend is actually a friend.
@@ -71,13 +71,13 @@ public class Purge {
                             logger.warn("Could not remove account: " + lastSeenFriendsXUID + " : " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
                         }
                     } catch (NumberFormatException e) {
-                        throw new RuntimeException(e);
+                        logger.error(e.getMessage());
                     }
                 } else {
                     logger.info("player only joined on " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
                 }
             } else {
-                logger.info("All friends recently joined or all older friends have been removed!");
+                logger.info("All friends have recently played!");
             }
         }
     }

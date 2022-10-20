@@ -65,4 +65,10 @@ public class Configurate {
     public int getTime() {
         return time;
     }
+
+    @JsonProperty("days")
+    private int days;
+    public int getDays() {
+        return days;
+    }
 }

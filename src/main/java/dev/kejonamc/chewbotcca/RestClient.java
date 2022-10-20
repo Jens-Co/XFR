@@ -1,13 +1,16 @@
 package dev.kejonamc.chewbotcca;
 
+import dev.kejonamc.XFR;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
 
 public class RestClient {
+    private static final Logger logger = new XFR().getLogger();
+
     public static String getXBL(String url, String apiKey) {
         Request request = new Request.Builder()
                 .url(url)
@@ -15,7 +18,7 @@ public class RestClient {
                 .get()
                 .build();
 
-        LoggerFactory.getLogger(RestClient.class).debug("Making call to GET " + url);
+        logger.debug("Making call to GET " + url);
         return performRequest(request);
     }
 
@@ -37,7 +40,7 @@ public class RestClient {
             }
             return body;
         } catch (IOException e) {
-            LoggerFactory.getLogger(RestClient.class).warn("Call to " + request.url() + " failed with IOException!");
+            logger.warn("Call to " + request.url() + " failed with IOException!");
             return "{error: 'IOException'}";
         }
     }
