@@ -66,7 +66,6 @@ public class Purge {
                         int serverCode = Integer.parseInt(RestClient.xblStatusCode("https://xbl.io/api/v2/friends/remove/" + lastSeenFriendsXUID, config.getApiKey()));
                         if (serverCode == 200) {
                             logger.info("Removed account: " + lastSeenFriendsXUID + " : " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
-                            lastSeenFriends.getLastSeenFriendsHashMap().remove(lastSeenFriendsXUID);
                         } else {
                             logger.warn("Could not remove account: " + lastSeenFriendsXUID + " : " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
                         }
@@ -76,9 +75,9 @@ public class Purge {
                 } else {
                     logger.info("player only joined on " + lastSeenFriends.getLastSeenFriendsHashMap().get(lastSeenFriendsXUID));
                 }
-            } else {
-                logger.info("All friends have recently played!");
             }
         }
+        lastSeenFriends.getLastSeenFriendsHashMap().clear();
+        friendsList.getFriendsHashMap().clear();
     }
 }
